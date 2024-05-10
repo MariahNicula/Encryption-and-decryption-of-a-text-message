@@ -1,0 +1,74 @@
+import sympy
+import random
+
+alphabet = ' abcdefghijklmnopqrstuvwxyz'
+
+
+def validate_message(message):
+    for char in message:
+        if char.lower() not in alphabet:
+            raise ValueError("Invalid character in the message: {}".format(char))
+
+
+def extended_gcd(a, b):
+    if a == 0:
+        return b, 0, 1
+    else:
+        g, x, y = extended_gcd(b % a, a)
+        return g, y - (b // a) * x, x
+
+
+def modinv(a, m):
+    g, x, y = extended_gcd(a, m)
+    if g != 1:
+        raise Exception('Modular inverse does not exist')
+    else:
+        return x % m
+
+
+def generate_keypair():
+    p = sympy.randprime(100, 1000)
+    q = sympy.randprime(100, 1000)
+    n = p * q
+    phi_n = (p - 1) * (q - 1)
+    e = 65537
+    d = modinv(e, phi_n)
+    return (e, n), (d, n)
+
+
+def encrypt(message, public_key):
+    e, n = public_key
+    ciphertext = [pow(ord(char), e, n) for char in message]
+    return ciphertext
+
+
+def decrypt(ciphertext, private_key):
+    d, n = private_key
+    decrypted_message = ''.join([chr(pow(char, d, n)) for char in ciphertext])
+    return decrypted_message
+
+
+def main():
+    public_key, private_key = generate_keypair()
+
+    print("Public Key:", public_key)
+    print("Private Key:", private_key)
+
+    message = "Hello beautiful world!"
+
+    # Validate the message
+    validate_message(message)
+
+    print("Original Message:", message)
+
+    # Encryption
+    encrypted_message = encrypt(message, public_key)
+    print("Encrypted Message:", encrypted_message)
+
+    # Decryption
+    decrypted_message = decrypt(encrypted_message, private_key)
+    print("Decrypted Message:", decrypted_message)
+
+
+if __name__ == "__main__":
+    main()
