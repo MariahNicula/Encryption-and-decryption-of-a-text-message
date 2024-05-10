@@ -54,7 +54,7 @@ def main():
     print("Public Key:", public_key)
     print("Private Key:", private_key)
 
-    message = "Hello beautiful world!"
+    message = "Hello beautiful world"
 
     # Validate the message
     validate_message(message)
